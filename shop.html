@@ -1,11 +1,12 @@
 
 <!DOCTYPE html>
+
 <html lang="hu">
 <head>
-  <meta charset="UTF-8">
-  <title>Termékek – Organic GSM</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js">
+<meta charset="utf-8"/>
+<title>Termékek – Organic GSM</title>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js">
 function filterProducts() {
   const input = document.getElementById("search").value.toLowerCase();
   const items = document.querySelectorAll(".product-item");
@@ -15,8 +16,7 @@ function filterProducts() {
   });
 }
 </script>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js">
 function filterProducts() {
   const input = document.getElementById("search").value.toLowerCase();
   const items = document.querySelectorAll(".product-item");
@@ -26,8 +26,7 @@ function filterProducts() {
   });
 }
 </script>
-
-  <style>
+<style>
     body {
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
@@ -121,41 +120,35 @@ function filterProducts() {
   </style>
 </head>
 <body>
-
 <header>
-  <h1>Organic GSM – Termékek</h1>
-  <button onclick="window.location.href='index.html'">Kijelentkezés</button>
+<div id="welcome-message" style="position: absolute; left: 50%; transform: translateX(-50%); color: white; font-size: 18px; font-weight: bold;">Üdvözlünk!</div><h1>Organic GSM – Termékek</h1>
+<button onclick="window.location.href='index.html'" style="position: absolute; right: 20px; top: 20px; background: white; color: #0a3d62; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">Kijelentkezés</button>
 </header>
-
-
 <main style="align-items: flex-start;">
-  <div class="product-list">
-    <h2>Terméklista</h2>
-    <input type="text" id="search" placeholder="Keresés..." onkeyup="filterProducts()" style="width:100%;padding:8px;margin-bottom:12px;border:1px solid #ccc;border-radius:6px;">
-    <div id="productContainer" style="max-height:80vh;overflow-y:auto;"></div>
-  </div>
-  <div class="cart" style="position:sticky;top:20px;height:fit-content;">
-    <h2>Kosár</h2>
-    <ul id="cartList"></ul>
-    <p id="total">Végösszeg: 0 Ft</p>
-    <button onclick="finalizeOrder()">Rendelés lezárása</button>
-    <div id="confirmation"></div>
-  </div>
+<div class="product-list">
+<h2>Terméklista</h2>
+<input id="search" onkeyup="filterProducts()" placeholder="Keresés..." style="width:100%;padding:8px;margin-bottom:12px;border:1px solid #ccc;border-radius:6px;" type="text"/>
+<div id="productContainer" style="max-height:80vh;overflow-y:auto;"></div>
+</div>
+<div class="cart" style="position:sticky;top:20px;height:fit-content;">
+<h2>Kosár</h2>
+<ul id="cartList"></ul>
+<p id="total">Végösszeg: 0 Ft</p>
+<button onclick="finalizeOrder()">Rendelés lezárása</button>
+<div id="confirmation"></div>
+</div>
 </main>
-
-  <div class="product-list">
-    <h2>Terméklista</h2>
-    <div id="productContainer"></div>
-  </div>
-  <div class="cart">
-    <h2>Kosár</h2>
-    <ul id="cartList"></ul>
-    <p id="total">Végösszeg: 0 Ft</p>
-    <button onclick="finalizeOrder()">Rendelés lezárása</button>
-    <div id="confirmation"></div>
-  </div>
-</main>
-
+<div class="product-list">
+<h2>Terméklista</h2>
+<div id="productContainer"></div>
+</div>
+<div class="cart">
+<h2>Kosár</h2>
+<ul id="cartList"></ul>
+<p id="total">Végösszeg: 0 Ft</p>
+<button onclick="finalizeOrder()">Rendelés lezárása</button>
+<div id="confirmation"></div>
+</div>
 <script>
 emailjs.init("ll-ox5ToRtPOnL23O");
 
@@ -239,7 +232,18 @@ function filterProducts() {
   });
 }
 </script>
-
-
-</body>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const email = localStorage.getItem("loggedInEmail");
+    const nameMap = {
+        "yukonscoutdoo@gmail.com": "Yukon Scout doo",
+        "teszt@teszt.hu": "Teszt Felhasználó"
+    };
+    const welcome = document.getElementById("welcome-message");
+    if (email && welcome) {
+        const name = nameMap[email] || email;
+        welcome.textContent = `Üdvözlünk, ${name}!`;
+    }
+});
+</script></body>
 </html>
