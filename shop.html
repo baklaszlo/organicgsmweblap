@@ -154,14 +154,24 @@
                 div.className = "product";
                 div.innerHTML = `
                     ${p.item} – ${p.price} EUR
-                    <button class="add-to-cart" onclick="addToCart('${p.item}', ${p.price})">Kosárba</button>
+                    
+            <input type="number" class="quantity" value="1" min="1" id="qty-${p.item.replace(/\s+/g, '_')}"/>
+            <button class="add-to-cart" onclick="addToCart('${p.item}', ${p.price}, 'qty-${p.item.replace(/\s+/g, '_')}')">Kosárba</button>
+            
                 `;
                 container.appendChild(div);
             });
         }
 
-        function addToCart(item, price) {
-            cart.push({ item, price });
+        function addToCart(item, price, inputId) {
+            
+            const qty = parseInt(document.getElementById(inputId).value);
+            if (!isNaN(qty) && qty > 0) {
+                for (let i = 0; i < qty; i++) {
+                    cart.push({ item, price });
+                }
+            }
+            
             renderCart();
         }
 
