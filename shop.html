@@ -95,19 +95,24 @@
 
 <script>
 async function loadCSV() {
-    const response = await fetch("TPlista0702.csv");
-    const text = await response.text();
-    const lines = text.trim().split("\n");
-    const products = [];
+    try {
+        const response = await fetch("TPlista0702.csv");
+        const text = await response.text();
+        const lines = text.trim().split("\n");
+        const products = [];
 
-    for (let i = 1; i < lines.length; i++) {
-        const [item, price] = lines[i].split(",");
-        if (item && price) {
-            products.push({ item: item.trim(), price: parseFloat(price.trim()) });
+        for (let i = 1; i < lines.length; i++) {
+            const [item, price] = lines[i].split(",");
+            if (item && price) {
+                products.push({ item: item.trim(), price: parseFloat(price.trim()) });
+            }
         }
+        renderProducts(products);
+    } catch (error) {
+        console.error("Hiba a CSV beolvasásakor:", error);
     }
-    renderProducts(products);
 }
+
 window.onload = () => {
     loadCSV();
 };
