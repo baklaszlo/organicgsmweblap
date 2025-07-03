@@ -1,0 +1,129 @@
+
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>Terméklista CSV-ből</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4; }
+    h1 { color: #0a3d62; }
+    #logout { float: right; background: #ddd; padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; }
+    table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; }
+    th, td { padding: 10px; border: 1px solid #ccc; text-align: left; }
+    th { background: #ecf0f1; }
+    button { background: #2980b9; color: white; border: none; padding: 6px 12px; cursor: pointer; border-radius: 4px; }
+    button:hover { background: #1e5f8a; }
+    .cart-container { margin-top: 40px; background: white; padding: 20px; border-radius: 6px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+    #confirmation { color: green; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+<h1>Terméklista <button id="logout" onclick="logout()">Kilépés</button></h1>
+
+<table id="productTable">
+  <thead>
+    <tr>
+      <th>EAN</th>
+      <th>Termék</th>
+      <th>Bruttó ár/db</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<div class="cart-container">
+  <h2>Kosár</h2>
+  <ul id="cartList"></ul>
+  <p id="total">Végösszeg: 0 Ft</p>
+  <button onclick="finalizeOrder()">Rendelés lezárása</button>
+  <div id="confirmation"></div>
+</div>
+
+<script>
+emailjs.init("ll-ox5ToRtPOnL23O");
+
+const cart = [];
+
+function logout() {
+  window.location.href = "index.html";
+}
+
+function addToCart(item) {
+  const existing = cart.find(i => i.EAN === item.EAN);
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    cart.push({ ...item, qty: 1 });
+  }
+  renderCart();
+}
+
+function renderCart() {
+  const cartList = document.getElementById("cartList");
+  cartList.innerHTML = "";
+  let total = 0;
+  cart.forEach(item => {
+    total += item.qty * parseInt(item.Ár);
+    const li = document.createElement("li");
+    li.textContent = `${item.Termék} – ${item.qty} db – ${parseInt(item.Ár).toLocaleString()} Ft/db`;
+    cartList.appendChild(li);
+  });
+  document.getElementById("total").textContent = "Végösszeg: " + total.toLocaleString() + " Ft";
+}
+
+function finalizeOrder() {
+  if (cart.length === 0) {
+    alert("A kosár üres!");
+    return;
+  }
+  const orderDetails = cart.map(item =>
+    `${item.Termék} – ${item.qty} db – ${parseInt(item.Ár).toLocaleString()} Ft/db`
+  ).join("\n");
+  const total = cart.reduce((sum, item) => sum + item.qty * parseInt(item.Ár), 0);
+  const fullMessage = `Köszönjük rendelését!\n\nMegrendelt tételek:\n${orderDetails}\n\nVégösszeg: ${total.toLocaleString()} Ft`;
+  const templateParams = { message: fullMessage };
+
+  const confirmation = document.getElementById("confirmation");
+  emailjs.send("service_mq7100r", "template_v1t2iq9", templateParams)
+    .then(() => {
+      confirmation.textContent = "Rendelését megkaptuk, köszönjük!";
+    }, (error) => {
+      confirmation.textContent = "Hiba történt a rendelés küldésekor.";
+      console.error("Email küldési hiba:", error);
+    });
+}
+
+fetch("TPlista0702.csv")
+  .then(response => response.text())
+  .then(csv => {
+    const data = Papa.parse(csv, {
+      header: true,
+      skipEmptyLines: true
+    }).data;
+    const tbody = document.querySelector("#productTable tbody");
+    data.forEach(row => {
+      const ár = parseInt((row["Bruttó ár/db"] || "0").replace(/[^0-9]/g, ""));
+      const item = {
+        EAN: row["EAN"],
+        Termék: row["Termék"],
+        Ár: ár
+      };
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${item.EAN}</td>
+        <td>${item.Termék}</td>
+        <td>${ár.toLocaleString()} Ft</td>
+        <td><button onclick='addToCart(${JSON.stringify(item)})'>Kosárba</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  });
+</script>
+
+</body>
+</html>
