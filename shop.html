@@ -5,8 +5,28 @@
   <meta charset="UTF-8">
   <title>Termékek – Organic GSM</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js">
+function filterProducts() {
+  const input = document.getElementById("search").value.toLowerCase();
+  const items = document.querySelectorAll(".product-item");
+  items.forEach(item => {
+    const name = item.querySelector(".name").textContent.toLowerCase();
+    item.style.display = name.includes(input) ? "flex" : "none";
+  });
+}
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js">
+function filterProducts() {
+  const input = document.getElementById("search").value.toLowerCase();
+  const items = document.querySelectorAll(".product-item");
+  items.forEach(item => {
+    const name = item.querySelector(".name").textContent.toLowerCase();
+    item.style.display = name.includes(input) ? "flex" : "none";
+  });
+}
+</script>
+
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -107,7 +127,22 @@
   <button onclick="window.location.href='index.html'">Kijelentkezés</button>
 </header>
 
-<main>
+
+<main style="align-items: flex-start;">
+  <div class="product-list">
+    <h2>Terméklista</h2>
+    <input type="text" id="search" placeholder="Keresés..." onkeyup="filterProducts()" style="width:100%;padding:8px;margin-bottom:12px;border:1px solid #ccc;border-radius:6px;">
+    <div id="productContainer" style="max-height:80vh;overflow-y:auto;"></div>
+  </div>
+  <div class="cart" style="position:sticky;top:20px;height:fit-content;">
+    <h2>Kosár</h2>
+    <ul id="cartList"></ul>
+    <p id="total">Végösszeg: 0 Ft</p>
+    <button onclick="finalizeOrder()">Rendelés lezárása</button>
+    <div id="confirmation"></div>
+  </div>
+</main>
+
   <div class="product-list">
     <h2>Terméklista</h2>
     <div id="productContainer"></div>
@@ -194,7 +229,17 @@ fetch("TPlista0702.csv")
       productContainer.appendChild(div);
     });
   });
+
+function filterProducts() {
+  const input = document.getElementById("search").value.toLowerCase();
+  const items = document.querySelectorAll(".product-item");
+  items.forEach(item => {
+    const name = item.querySelector(".name").textContent.toLowerCase();
+    item.style.display = name.includes(input) ? "flex" : "none";
+  });
+}
 </script>
+
 
 </body>
 </html>
