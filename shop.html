@@ -134,7 +134,7 @@ function filterProducts() {
 <h2>Kosár</h2>
 <ul id="cartList"></ul>
 <p id="total">Végösszeg: 0 Ft</p>
-<button onclick="sendOrderEmail()">Rendelés lezárása</button>
+<button onclick="finalizeOrder()">Rendelés lezárása</button>
 <div id="confirmation"></div>
 </div>
 </main>
@@ -146,89 +146,32 @@ function filterProducts() {
 <h2>Kosár</h2>
 <ul id="cartList"></ul>
 <p id="total">Végösszeg: 0 Ft</p>
-<button onclick="sendOrderEmail()">Rendelés lezárása</button>
+<button onclick="finalizeOrder()">Rendelés lezárása</button>
 <div id="confirmation"></div>
 </div>
 <script>
-emailjs.init("ll-ox5ToRtPOnL23O");
-
-const cart = [];
-
-function addToCart(item) {
-  const existing = cart.find(i => i.EAN === item.EAN);
-  if (existing) {
-    existing.qty += 1;
-  } else {
-    cart.push({ ...item, qty: 1 });
-  }
-  renderCart();
-}
-
-function renderCart() {
-  const cartList = document.getElementById("cartList");
-  cartList.innerHTML = "";
-  let total = 0;
-  cart.forEach(item => {
-    const itemTotal = item.qty * item.Ár;
-    total += itemTotal;
-    const li = document.createElement("li");
-    li.textContent = `${item.Termék} – ${item.qty} db – ${item.Ár.toLocaleString()} Ft/db`;
-    cartList.appendChild(li);
-  });
-  document.getElementById("total").textContent = "Végösszeg: " + total.toLocaleString() + " Ft";
-}
-
 function finalizeOrder() {
   if (cart.length === 0) {
     alert("A kosár üres!");
     return;
   }
+
   const orderDetails = cart.map(item =>
     `${item.Termék} – ${item.qty} db – ${item.Ár.toLocaleString()} Ft/db`
   ).join("\n");
   const total = cart.reduce((sum, item) => sum + item.qty * item.Ár, 0);
   const message = `Köszönjük rendelését!\n\nMegrendelt tételek:\n${orderDetails}\n\nVégösszeg: ${total.toLocaleString()} Ft`;
-  emailjs.send("service_mq7100r", "template_v1t2iq9", { message })
-    .then(() => {
-      document.getElementById("confirmation").textContent = "Rendelését megkaptuk, köszönjük!";
-    }, (err) => {
-      document.getElementById("confirmation").textContent = "Hiba történt a rendelés küldésekor.";
-      console.error(err);
-    });
-}
+  const email = localStorage.getItem("loggedInEmail") || "ismeretlen@domain.hu";
 
-fetch("TPlista0702.csv")
-  .then(res => res.text())
-  .then(csv => {
-    const data = Papa.parse(csv, { header: true, skipEmptyLines: true }).data;
-    const productContainer = document.getElementById("productContainer");
-    data.forEach(row => {
-      const termekNev = row["item"];
-      const arStr = row["unit price"];
-      const ean = row["EAN"];
-      const ar = parseInt((arStr || "0").replace(/[^0-9]/g, ""));
-
-      const item = { EAN: ean, Termék: termekNev, Ár: ar };
-
-      const div = document.createElement("div");
-      div.className = "product-item";
-      div.innerHTML = `
-        <div class="product-info">
-          <span class="name">${termekNev}</span>
-          <span class="price">${ar.toLocaleString()} Ft</span>
-        </div>
-        <button class="add-btn" onclick='addToCart(${JSON.stringify(item)})'>Kosárba</button>
-      `;
-      productContainer.appendChild(div);
-    });
-  });
-
-function filterProducts() {
-  const input = document.getElementById("search").value.toLowerCase();
-  const items = document.querySelectorAll(".product-item");
-  items.forEach(item => {
-    const name = item.querySelector(".name").textContent.toLowerCase();
-    item.style.display = name.includes(input) ? "flex" : "none";
+  emailjs.send("service_mq7100r", "template_dkx9ahj", {
+    items: message,
+    user_email: email
+  }, "ll-ox5ToRtPOnL23O")
+  .then(() => {
+    document.getElementById("confirmation").textContent = "Rendelését megkaptuk, köszönjük!";
+  }, (err) => {
+    document.getElementById("confirmation").textContent = "Hiba történt a rendelés küldésekor.";
+    console.error(err);
   });
 }
 </script>
@@ -245,30 +188,5 @@ document.addEventListener("DOMContentLoaded", function() {
         welcome.textContent = `Üdvözlünk, ${name}!`;
     }
 });
-</script><script>
-function sendOrderEmail() {
-    const email = localStorage.getItem("loggedInEmail") || "ismeretlen@domain.hu";
-    const orderItems = document.querySelectorAll("#cartList li");
-    if (orderItems.length === 0) {
-        alert("A kosár üres.");
-        return;
-    }
-
-    let orderSummary = "";
-    orderItems.forEach(item => {
-        orderSummary += "- " + item.textContent.trim() + "\n";
-    });
-
-    emailjs.send("service_mq7100r", "template_dkx9ahj", {
-        items: orderSummary,
-        user_email: email
-    }, "ll-ox5ToRtPOnL23O")
-    .then(() => {
-        alert("A rendelés sikeresen elküldve!");
-    })
-    .catch(() => {
-        alert("Hiba történt a rendelés küldésekor.");
-    });
-}
 </script></body>
 </html>
