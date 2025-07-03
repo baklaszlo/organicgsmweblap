@@ -1,11 +1,12 @@
 
 <!DOCTYPE html>
+
 <html lang="hu">
 <head>
-  <meta charset="UTF-8">
-  <title>Belépés – Organic GSM</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
+<meta charset="utf-8"/>
+<title>Belépés – Organic GSM</title>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<style>
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
@@ -65,25 +66,29 @@
       margin-top: 10px;
     }
   </style>
-</head>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&amp;display=swap" rel="stylesheet"/></head>
 <body>
 
-<header>
-  <h1>Organic GSM</h1>
+<header style="padding: 30px 20px; background: #0a3d62; display: flex; justify-content: space-between; align-items: center;">
+<div style="display:flex;align-items:center;gap:20px;width:100%;">
+<img alt="Organic GSM logó" src="logo_organicgsm.png" style="height:300px;"/>
+<h1 style="margin:0 auto; font-size: 54px; font-family: 'Quicksand', 'Arial Rounded MT Bold', sans-serif; font-style: italic; letter-spacing: 1px; font-weight: bold; color:white; text-align: center;">
+<span style="font-size:64px;">ORGANIC GSM</span><br/>Mobiltelefon nagykereskedés
+    </h1>
+</div>
 </header>
 
 <main>
-  <div class="login-box">
-    <h2>Belépés</h2>
-    <form id="loginForm">
-      <input type="email" id="email" placeholder="Email cím" required>
-      <input type="password" id="password" placeholder="Jelszó" required>
-      <button type="submit">Belépés</button>
-      <div id="error"></div>
-    </form>
-  </div>
+<div class="login-box">
+<h2>Belépés</h2>
+<form id="loginForm">
+<input id="email" placeholder="Email cím" required="" type="email"/>
+<input id="password" placeholder="Jelszó" required="" type="password"/>
+<button type="submit">Belépés</button>
+<div id="error"></div>
+</form>
+</div>
 </main>
-
 <script>
 document.getElementById("loginForm").addEventListener("submit", function(e) {
   e.preventDefault();
@@ -96,6 +101,5 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
   }
 });
 </script>
-
 </body>
 </html>
