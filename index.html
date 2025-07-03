@@ -3,73 +3,71 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8">
-  <title>Belépés – Organic GSM</title>
+  <title>Organic GSM – Bemutatkozás</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #ecf0f1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
+      margin: 0;
+      background: #fdfdfd;
+      line-height: 1.6;
     }
-    .login-container {
-      background-color: white;
-      padding: 40px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
-      width: 300px;
-      text-align: center;
-    }
-    input[type=email], input[type=password] {
-      width: 100%;
-      padding: 10px;
-      margin: 12px 0;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-    button {
-      width: 100%;
-      background-color: #2980b9;
+    header {
+      background: #0a3d62;
       color: white;
-      padding: 10px;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      margin: 0;
+    }
+    header button {
+      background: white;
+      color: #0a3d62;
+      padding: 8px 16px;
       border: none;
       border-radius: 6px;
-      font-size: 16px;
       cursor: pointer;
+      font-weight: bold;
     }
-    button:hover {
-      background-color: #1e5f8a;
+    header button:hover {
+      background: #ecf0f1;
     }
-    #error {
-      color: red;
-      margin-top: 10px;
+    section {
+      padding: 20px;
+      max-width: 900px;
+      margin: auto;
+    }
+    h2 {
+      color: #0a3d62;
     }
   </style>
 </head>
 <body>
 
-<div class="login-container">
-  <h2>Belépés</h2>
-  <input type="email" id="email" placeholder="Email cím" required>
-  <input type="password" id="password" placeholder="Jelszó" required>
-  <button onclick="login()">Belépés</button>
-  <div id="error"></div>
-</div>
+<header>
+  <h1>Organic GSM</h1>
+  <button onclick="window.location.href='login.html'">Belépés</button>
+</header>
 
-<script>
-function login() {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-  if (email === "teszt@teszt.hu" && password === "teszt") {
-    window.location.href = "shop.html";
-  } else {
-    document.getElementById("error").innerText = "Hibás belépési adatok.";
-  }
-}
-</script>
+<section><h2>Rólunk</h2>
+<p>ORGANIC GSM – A Mobiltelefon nagykereskedés – Megbízhatóság, választék, gyorsaság egy helyen!<br>Üdvözöljük Magyarország egyik meghatározó mobiltelefon nagykereskedelmi központjában, ahol a technológia, a szakértelem és az ügyfélközpontúság találkozik!<br>Többéves tapasztalatunkkal, felkészült, szakértő kollégáinkkal és rugalmas megoldásainkkal segítjük partnereinket a versenyképes és gördülékeny működésben – legyen szó viszonteladókról, webshopokról vagy vállalati beszerzőkről.<br>Miért válasszon minket?<br>✅ Széles termékkínálat – szinte minden típusban<br>Legyen szó a legújabb csúcskategóriás modellekről vagy költséghatékony megoldásokról, nálunk megtalálja, amit keres. Raktárról azonnal elérhető termékeink mellett gyors beszerzést biztosítunk rendelésre is – legyen az akár egyedi igény, akár nagy tétel.<br>✅ Gyors és megbízható szállítás<br>Tudjuk, mennyire fontos a pontosság az üzletmenetben. Ezért garantáljuk a gyors kiszállítást, akár 24–48 órán belül, belföldön és külföldre egyaránt. Saját logisztikai hálózatunk és stabil partnereink révén mindig időben érkezik az áru.<br>✅ Teljeskörű garancia, biztonságos vásárlás<br>Minden általunk forgalmazott készülékre teljes körű gyártói vagy kereskedelmi garanciát biztosítunk, így partnereink mindig nyugodt szívvel rendelhetnek tőlünk.<br>✅ Ügyfélközpontú hozzáállás<br>Számunkra minden ügyfél egyedi – legyen Ön kezdő viszonteladó vagy évek óta működő vállalkozás. Kollégáink segítenek a megfelelő típus kiválasztásában, egyedi ajánlatot készítenek, és mindig elérhetők kérdés vagy probléma esetén.<br>✅ Kifejezetten cégek kiszolgálására szakosodva<br>Fő fókuszunk a vállalati partnerek magas színvonalú kiszolgálása. Tudjuk, hogy az üzleti világban nincs idő kompromisszumokra – ezért nálunk a megbízhatóság és a gyors reakcióidő alapelv.<br>Velünk nem csak terméket vásárol –<br>egy stabil, hosszú távú partnert nyer, aki támogatja vállalkozása fejlődését.<br>Lépjen velünk kapcsolatba, és kérje cégére  szabott árlistánkat  még ma!</p></section>
+
+<section><h2>Vásárlás</h2>
+<p>A vásárlás menete – gyors, biztonságos és átlátható<br>Ahhoz, hogy Ön is partnerünk lehessen, néhány egyszerű, de szükséges lépésen kell végighaladni. Célunk, hogy a vásárlás menete gördülékeny és biztonságos legyen – mindkét fél számára.<br>1. Regisztráció<br>Az együttműködés első lépése a regisztráció. Kérjük, kérje emailben adatlapunkat, amely kitöltéséhez  alapvető céges adatokra lesz szükség.<br>2. Céges dokumentumok beküldése<br>A regisztrációs nyomtaatvánnyal, kérjük, küldje el számunkra az alábbi érvényes céges dokumentumokat:<br>Cégkivonat (30 napnál nem régebbi)<br>Aláírási címpéldány vagy aláírásminta<br>Adószám igazolás<br>Kapcsolattartó elérhetőségei<br>3. Együttműködési szerződés megkötése<br>A szükséges dokumentumok beérkezése után e-mailben elküldjük Önnek az együttműködési szerződést. A szerződés aláírásával válik lehetővé a nagykereskedelmi együttműködés.<br>4. Adatok ellenőrzése és partneri fiók aktiválása<br>Miután minden dokumentum beérkezett és ellenőrzésre került, partnerként felvesszük Önt rendszerünkbe, és aktiváljuk egyedi hozzáférését.<br>5. Egyedi árképzés és heti árlisták<br>Minden partnerünk egyedi árkategóriába kerül besorolásra, forgalom és együttműködés alapján. Hetente frissülő árlistáinkat e-mailben küldjük meg partnereinknek, így mindig naprakészen tájékozódhat aktuális ajánlatainkról, készleteinkről és akcióinkról.<br>Kérdése van?<br>Ügyfélszolgálatunk készséggel segít a folyamat minden lépésében – keressen minket bizalommal!</p></section>
+
+<section><h2>Szállítás</h2>
+<p>Szállítási információk – gyors, biztonságos, rugalmas megoldások<br>Megrendeléseit megbízható logisztikai partnercégünk segítségével szállítjuk ki, de lehetőség van a személyes átvételre is telephelyünkön, előre egyeztetett időpontban.<br>Szállítás menete:<br>A megrendelt árut a fizetés beérkezését követően 2–5 munkanapon belül kiszállítjuk partnereink részére.<br>A szállítás saját, régóta bevált partnerfuvarozónkkal történik, garantálva a gyors és biztonságos kézbesítést.<br>Minden kiszállított áruról szállítólevél készül, amelyet a partner a csomag átvételekor kap meg.<br>Egyedi igények, nemzetközi szállítás vagy export esetén (pl. CMR, kiviteli igazolás) kérjük, előzetesen egyeztessen velünk, hogy biztosítani tudjuk a megfelelő dokumentumokat és gördülékeny ügyintézést.<br>Személyes átvétel:<br>Igény esetén az áru személyesen is átvehető telephelyünkön, előre egyeztetett időpontban.<br>Kérjük, minden esetben várja meg a visszaigazolást, hogy a megrendelés összeállítása és az elszámolás megtörtént.<br>Tulajdonjog fenntartása:<br>Felhívjuk figyelmét, hogy a kiszállított áru a teljes vételár kiegyenlítéséig, illetve az átvétel megtörténtéig cégünk tulajdonát képezi.<br>Ez a feltétel minden partnerünkre érvényes, és biztosítja az együttműködés jogi és pénzügyi átláthatóságát.<br>Ha kérdése van a szállítással kapcsolatban, vagy speciális igényt jelezne, ügyfélszolgálatunk készséggel áll rendelkezésére!<br>Célunk, hogy az áru gyorsan, pontosan és biztonságosan érkezzen meg Önhöz.</p></section>
+
+<section><h2>Garancia</h2>
+<p>Garancia – Mert a bizalom alapja a megbízhatóság<br>Nálunk a vásárlás nem ér véget az áru átvételével – partnereink számára teljeskörű garanciát biztosítunk minden nálunk vásárolt készülékre. Célunk, hogy Ön biztonságban érezze magát, és mindig számíthasson ránk, ha technikai probléma merülne fel.<br>Mit jelent a teljeskörű garancia nálunk?<br>✅ Javítás vagy csere<br>A meghibásodott készülékeket a garanciális időn belül díjmentesen javítjuk, vagy – ha szükséges – cseréljük egy új vagy azonos értékű eszközre.<br>✅ Cserekészülék biztosítása<br>Amennyiben a javítás ideje hosszabb időt venne igénybe, lehetőség van cserekészülék igénylésére, hogy partnereink zavartalanul folytathassák munkájukat.<br>✅ Széles szervizhálózat<br>Országosan együttműködünk megbízható szervizpartnerekkel, így gyors és szakszerű javítást tudunk biztosítani, minimális ügyintézési idővel.<br>✅ Iparági szabványok szerinti garanciális időtartam<br>A termékekre az iparágban megszokott garanciális feltételek vonatkoznak, melyek típusonként eltérhetnek – ezekről minden esetben részletes tájékoztatást nyújtunk.<br>Kérdés vagy probléma esetén ne habozzon – kollégáink készséggel állnak rendelkezésére!<br>Forduljon hozzánk bizalommal, akár e-mailben, akár telefonon – garanciális ügyintézésben is gyors, korrekt és segítőkész partnerek vagyunk.</p></section>
+
+<section><h2>Kapcsolat</h2>
+<p>Kapcsolat<br>Organic Team Kft.<br>Székhely: 1031 Budapest, Rozália utca 11.<br>Adószám: 14938070-2-41<br>Cégjegyzékszám: 01-09-965443<br>📞 Telefon: +36 70 255 7258<br>📧 E-mail:<br>– Általános ügyintézés: info@organicgsm.hu<br>– Szerviz: szerviz@organicgsm.hu<br>– Szállítás: szallitas@organicgsm.hu<br>– Microsoft Teams elérhetőség: info@organicgsm.hu<br>Kérdése van, segítségre van szüksége, vagy ajánlatot szeretne kérni?<br>Keressen bennünket bizalommal! Tapasztalt kollégáink készséggel állnak rendelkezésére minden hétköznap.</p></section>
+
+
 
 </body>
 </html>
