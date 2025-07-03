@@ -188,5 +188,53 @@ document.addEventListener("DOMContentLoaded", function() {
         welcome.textContent = `Üdvözlünk, ${name}!`;
     }
 });
+</script><script>
+let cart = [];
+
+function addToCart(name, price) {
+  const existing = cart.find(item => item.Termék === name);
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    cart.push({ Termék: name, Ár: price, qty: 1 });
+  }
+  renderCart();
+}
+
+function renderCart() {
+  const list = document.getElementById("cartList");
+  list.innerHTML = "";
+  let total = 0;
+  cart.forEach(item => {
+    const li = document.createElement("li");
+    li.textContent = `${item.Termék} – ${item.qty} db – ${item.Ár.toLocaleString()} Ft`;
+    list.appendChild(li);
+    total += item.Ár * item.qty;
+  });
+  document.getElementById("total").textContent = `Végösszeg: ${total.toLocaleString()} Ft`;
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  fetch("TPlista0702.csv")
+    .then(res => res.text())
+    .then(text => {
+      const data = Papa.parse(text, { header: true }).data;
+      const container = document.getElementById("productContainer");
+      data.forEach(row => {
+        if (row.item && row["unit price"]) {
+          const div = document.createElement("div");
+          div.className = "product-item";
+          div.innerHTML = `
+            <div class="product-info">
+              <span class="name">${row.item}</span>
+              <span class="price">${Number(row["unit price"]).toLocaleString()} Ft</span>
+            </div>
+            <button class="add-btn" onclick="addToCart('${row.item}', ${row["unit price"]})">Kosárba</button>
+          `;
+          container.appendChild(div);
+        }
+      });
+    });
+});
 </script></body>
 </html>
