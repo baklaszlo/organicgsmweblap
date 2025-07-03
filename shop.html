@@ -119,7 +119,7 @@ function filterProducts() {
     }
   </style>
 </head>
-<body>
+<body><script src="https://cdn.emailjs.com/dist/email.min.js"></script><script>emailjs.init("ll-ox5ToRtPOnL23O");</script>
 <header>
 <div id="welcome-message" style="position: absolute; left: 50%; transform: translateX(-50%); color: white; font-size: 18px; font-weight: bold;">Üdvözlünk!</div><h1>Organic GSM – Termékek</h1>
 <button onclick="window.location.href='index.html'" style="position: absolute; right: 20px; top: 20px; background: white; color: #0a3d62; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">Kijelentkezés</button>
@@ -134,7 +134,7 @@ function filterProducts() {
 <h2>Kosár</h2>
 <ul id="cartList"></ul>
 <p id="total">Végösszeg: 0 Ft</p>
-<button onclick="finalizeOrder()">Rendelés lezárása</button>
+<button onclick="sendOrderEmail()">Rendelés lezárása</button>
 <div id="confirmation"></div>
 </div>
 </main>
@@ -146,7 +146,7 @@ function filterProducts() {
 <h2>Kosár</h2>
 <ul id="cartList"></ul>
 <p id="total">Végösszeg: 0 Ft</p>
-<button onclick="finalizeOrder()">Rendelés lezárása</button>
+<button onclick="sendOrderEmail()">Rendelés lezárása</button>
 <div id="confirmation"></div>
 </div>
 <script>
@@ -245,5 +245,30 @@ document.addEventListener("DOMContentLoaded", function() {
         welcome.textContent = `Üdvözlünk, ${name}!`;
     }
 });
+</script><script>
+function sendOrderEmail() {
+    const email = localStorage.getItem("loggedInEmail") || "ismeretlen@domain.hu";
+    const orderItems = document.querySelectorAll("#cart li");
+    if (orderItems.length === 0) {
+        alert("A kosár üres.");
+        return;
+    }
+
+    let orderSummary = "";
+    orderItems.forEach(item => {
+        orderSummary += "- " + item.textContent.trim() + "\n";
+    });
+
+    emailjs.send("service_mq7100r", "template_dkx9ahj", {
+        items: orderSummary,
+        user_email: email
+    }, "ll-ox5ToRtPOnL23O")
+    .then(() => {
+        alert("A rendelés sikeresen elküldve!");
+    })
+    .catch(() => {
+        alert("Hiba történt a rendelés küldésekor.");
+    });
+}
 </script></body>
 </html>
