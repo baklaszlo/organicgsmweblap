@@ -3,179 +3,73 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8">
-  <title>ORGANIC GSM – Bemutatkozás</title>
+  <title>Belépés – Organic GSM</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #ffffff;
-      color: #222;
-    }
-
-    header {
-      background: #0a3d62;
-      color: white;
-      padding: 20px;
+      background-color: #ecf0f1;
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
       align-items: center;
+      justify-content: center;
+      height: 100vh;
     }
-
-    header h1 {
-      margin: 0;
-      font-size: 22px;
-    }
-
-    .login-toggle {
-      background: white;
-      color: #0a3d62;
-      border: none;
-      padding: 8px 14px;
-      cursor: pointer;
-      border-radius: 5px;
-      font-weight: bold;
-    }
-
-    .login-box {
-      display: none;
-      position: absolute;
-      top: 70px;
-      right: 20px;
-      background: #f1f1f1;
-      border: 1px solid #ccc;
-      padding: 15px;
-      border-radius: 6px;
-      z-index: 1000;
-      width: 250px;
-    }
-
-    .login-box input {
-      width: 100%;
-      padding: 8px;
-      margin: 8px 0;
-    }
-
-    .login-box button {
-      background: #0a3d62;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      cursor: pointer;
-      width: 100%;
-      font-weight: bold;
-    }
-
-    .login-box button:hover {
-      background: #06426f;
-    }
-
-    .error {
-      color: red;
-      font-size: 14px;
-      margin-top: 5px;
-    }
-
-    nav {
-      background: #e6e6e6;
-      padding: 10px;
+    .login-container {
+      background-color: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      width: 300px;
       text-align: center;
     }
-
-    nav a {
-      margin: 0 15px;
-      text-decoration: none;
-      color: #0a3d62;
-      font-weight: bold;
+    input[type=email], input[type=password] {
+      width: 100%;
+      padding: 10px;
+      margin: 12px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
     }
-
-    section {
-      padding: 20px;
-      max-width: 900px;
-      margin: auto;
+    button {
+      width: 100%;
+      background-color: #2980b9;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
     }
-
-    h2 {
-      color: #0a3d62;
+    button:hover {
+      background-color: #1e5f8a;
+    }
+    #error {
+      color: red;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>ORGANIC GSM – Mobiltelefon nagykereskedés</h1>
-    <button class="login-toggle" onclick="toggleLogin()">Belépés</button>
-    <div class="login-box" id="loginBox">
-      <label for="email">Email:</label>
-      <input type="email" id="email" placeholder="Email">
-      <label for="password">Jelszó:</label>
-      <input type="password" id="password" placeholder="Jelszó">
-      <button onclick="login()">Belépés</button>
-      <p class="error" id="error"></p>
-    </div>
-  </header>
+<div class="login-container">
+  <h2>Belépés</h2>
+  <input type="email" id="email" placeholder="Email cím" required>
+  <input type="password" id="password" placeholder="Jelszó" required>
+  <button onclick="login()">Belépés</button>
+  <div id="error"></div>
+</div>
 
-  <nav>
-    <a href="#rolunk">Rólunk</a>
-    <a href="#vasarlas">Vásárlás</a>
-    <a href="#szallitas">Szállítás</a>
-    <a href="#garancia">Garancia</a>
-    <a href="#kapcsolat">Kapcsolat</a>
-  </nav>
-
-  <section id="rolunk">
-    <h2>Rólunk</h2>
-    <p>Üdvözöljük Magyarország egyik meghatározó mobiltelefon nagykereskedelmi központjában, ahol a technológia, a szakértelem és az ügyfélközpontúság találkozik! Többéves tapasztalatunkkal, felkészült, szakértő kollégáinkkal és rugalmas megoldásainkkal segítjük partnereinket a versenyképes és gördülékeny működésben – legyen szó viszonteladókról, webshopokról vagy vállalati beszerzőkről...</p>
-  </section>
-
-  <section id="vasarlas">
-    <h2>Vásárlás menete</h2>
-    <p>Ahhoz, hogy Ön is partnerünk lehessen, néhány egyszerű, de szükséges lépésen kell végighaladni. Célunk, hogy a vásárlás menete gördülékeny és biztonságos legyen – mindkét fél számára...</p>
-  </section>
-
-  <section id="szallitas">
-    <h2>Szállítási információk</h2>
-    <p>Megrendeléseit megbízható logisztikai partnercégünk segítségével szállítjuk ki, de lehetőség van a személyes átvételre is telephelyünkön, előre egyeztetett időpontban...</p>
-  </section>
-
-  <section id="garancia">
-    <h2>Garancia</h2>
-    <p>Nálunk a vásárlás nem ér véget az áru átvételével – partnereink számára teljeskörű garanciát biztosítunk minden nálunk vásárolt készülékre...</p>
-  </section>
-
-  <section id="kapcsolat">
-    <h2>Kapcsolat</h2>
-    <p>
-      Organic Team Kft.<br>
-      Székhely: 1031 Budapest, Rozália utca 11.<br>
-      Adószám: 14938070-2-41<br>
-      Cégjegyzékszám: 01-09-965443<br>
-      📞 Telefon: +36 70 255 7258<br>
-      📧 E-mail: info@organicgsm.hu<br>
-      Szerviz: szerviz@organicgsm.hu<br>
-      Szállítás: szallitas@organicgsm.hu
-    </p>
-  </section>
-
-  <script>
-    function toggleLogin() {
-      const loginBox = document.getElementById("loginBox");
-      loginBox.style.display = (loginBox.style.display === "block") ? "none" : "block";
-    }
-
-    function login() {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const error = document.getElementById("error");
-
-      if (email === "partner@example.com" && password === "admin123") {
-        window.location.href = "shop.html";
-      } else {
-        error.textContent = "Hibás email vagy jelszó!";
-      }
-    }
-  </script>
+<script>
+function login() {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  if (email === "teszt@teszt.hu" && password === "teszt") {
+    window.location.href = "shop.html";
+  } else {
+    document.getElementById("error").innerText = "Hibás belépési adatok.";
+  }
+}
+</script>
 
 </body>
 </html>
