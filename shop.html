@@ -87,9 +87,9 @@
         </div>
     </main>
 
-    <script type="module">
-        import emailjs from 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
-        window.emailjs = emailjs;
+    <!-- EmailJS v3 SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
         emailjs.init("ll-ox5ToRtPOnL23O");
     </script>
 
@@ -158,7 +158,6 @@
             });
         }
 
-        // CSV betöltése
         async function loadCSV() {
             const response = await fetch("TPlista0702.csv");
             const text = await response.text();
