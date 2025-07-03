@@ -3,55 +3,128 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8">
-  <title>Terméklista CSV-ből</title>
+  <title>Termékek – Organic GSM</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4; }
-    h1 { color: #0a3d62; }
-    #logout { float: right; background: #ddd; padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; }
-    table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; }
-    th, td { padding: 10px; border: 1px solid #ccc; text-align: left; }
-    th { background: #ecf0f1; }
-    button { background: #2980b9; color: white; border: none; padding: 6px 12px; cursor: pointer; border-radius: 4px; }
-    button:hover { background: #1e5f8a; }
-    .cart-container { margin-top: 40px; background: white; padding: 20px; border-radius: 6px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
-    #confirmation { color: green; margin-top: 10px; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #f8f9fa;
+      color: #333;
+    }
+    header {
+      background: #0a3d62;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      margin: 0;
+    }
+    header button {
+      background: white;
+      color: #0a3d62;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    header button:hover {
+      background: #dcdde1;
+    }
+    main {
+      display: flex;
+      padding: 20px;
+      gap: 40px;
+    }
+    .product-list, .cart {
+      flex: 1;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    .product-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .product-item:last-child {
+      border-bottom: none;
+    }
+    .product-info {
+      flex-grow: 1;
+    }
+    .product-info span {
+      display: block;
+    }
+    .product-info .name {
+      font-weight: bold;
+      color: #0a3d62;
+    }
+    .product-info .price {
+      color: #27ae60;
+    }
+    button.add-btn {
+      background: #2980b9;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button.add-btn:hover {
+      background: #1e5f8a;
+    }
+    ul#cartList {
+      list-style: none;
+      padding: 0;
+    }
+    ul#cartList li {
+      padding: 6px 0;
+    }
+    #total {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    #confirmation {
+      color: green;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
 
-<h1>Terméklista <button id="logout" onclick="logout()">Kilépés</button></h1>
+<header>
+  <h1>Organic GSM – Termékek</h1>
+  <button onclick="window.location.href='index.html'">Kijelentkezés</button>
+</header>
 
-<table id="productTable">
-  <thead>
-    <tr>
-      <th>EAN</th>
-      <th>Termék</th>
-      <th>Bruttó ár/db</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
-
-<div class="cart-container">
-  <h2>Kosár</h2>
-  <ul id="cartList"></ul>
-  <p id="total">Végösszeg: 0 Ft</p>
-  <button onclick="finalizeOrder()">Rendelés lezárása</button>
-  <div id="confirmation"></div>
-</div>
+<main>
+  <div class="product-list">
+    <h2>Terméklista</h2>
+    <div id="productContainer"></div>
+  </div>
+  <div class="cart">
+    <h2>Kosár</h2>
+    <ul id="cartList"></ul>
+    <p id="total">Végösszeg: 0 Ft</p>
+    <button onclick="finalizeOrder()">Rendelés lezárása</button>
+    <div id="confirmation"></div>
+  </div>
+</main>
 
 <script>
 emailjs.init("ll-ox5ToRtPOnL23O");
 
 const cart = [];
-
-function logout() {
-  window.location.href = "index.html";
-}
 
 function addToCart(item) {
   const existing = cart.find(i => i.EAN === item.EAN);
@@ -68,9 +141,10 @@ function renderCart() {
   cartList.innerHTML = "";
   let total = 0;
   cart.forEach(item => {
-    total += item.qty * parseInt(item.Ár);
+    const itemTotal = item.qty * item.Ár;
+    total += itemTotal;
     const li = document.createElement("li");
-    li.textContent = `${item.Termék} – ${item.qty} db – ${parseInt(item.Ár).toLocaleString()} Ft/db`;
+    li.textContent = `${item.Termék} – ${item.qty} db – ${item.Ár.toLocaleString()} Ft/db`;
     cartList.appendChild(li);
   });
   document.getElementById("total").textContent = "Végösszeg: " + total.toLocaleString() + " Ft";
@@ -82,45 +156,42 @@ function finalizeOrder() {
     return;
   }
   const orderDetails = cart.map(item =>
-    `${item.Termék} – ${item.qty} db – ${parseInt(item.Ár).toLocaleString()} Ft/db`
+    `${item.Termék} – ${item.qty} db – ${item.Ár.toLocaleString()} Ft/db`
   ).join("\n");
-  const total = cart.reduce((sum, item) => sum + item.qty * parseInt(item.Ár), 0);
-  const fullMessage = `Köszönjük rendelését!\n\nMegrendelt tételek:\n${orderDetails}\n\nVégösszeg: ${total.toLocaleString()} Ft`;
-  const templateParams = { message: fullMessage };
-
-  const confirmation = document.getElementById("confirmation");
-  emailjs.send("service_mq7100r", "template_v1t2iq9", templateParams)
+  const total = cart.reduce((sum, item) => sum + item.qty * item.Ár, 0);
+  const message = `Köszönjük rendelését!\n\nMegrendelt tételek:\n${orderDetails}\n\nVégösszeg: ${total.toLocaleString()} Ft`;
+  emailjs.send("service_mq7100r", "template_v1t2iq9", { message })
     .then(() => {
-      confirmation.textContent = "Rendelését megkaptuk, köszönjük!";
-    }, (error) => {
-      confirmation.textContent = "Hiba történt a rendelés küldésekor.";
-      console.error("Email küldési hiba:", error);
+      document.getElementById("confirmation").textContent = "Rendelését megkaptuk, köszönjük!";
+    }, (err) => {
+      document.getElementById("confirmation").textContent = "Hiba történt a rendelés küldésekor.";
+      console.error(err);
     });
 }
 
 fetch("TPlista0702.csv")
-  .then(response => response.text())
+  .then(res => res.text())
   .then(csv => {
-    const data = Papa.parse(csv, {
-      header: true,
-      skipEmptyLines: true
-    }).data;
-    const tbody = document.querySelector("#productTable tbody");
+    const data = Papa.parse(csv, { header: true, skipEmptyLines: true }).data;
+    const productContainer = document.getElementById("productContainer");
     data.forEach(row => {
-      const ár = parseInt((row["Bruttó ár/db"] || "0").replace(/[^0-9]/g, ""));
-      const item = {
-        EAN: row["EAN"],
-        Termék: row["Termék"],
-        Ár: ár
-      };
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${item.EAN}</td>
-        <td>${item.Termék}</td>
-        <td>${ár.toLocaleString()} Ft</td>
-        <td><button onclick='addToCart(${JSON.stringify(item)})'>Kosárba</button></td>
+      const termekNev = row["item"];
+      const arStr = row["unit price"];
+      const ean = row["EAN"];
+      const ar = parseInt((arStr || "0").replace(/[^0-9]/g, ""));
+
+      const item = { EAN: ean, Termék: termekNev, Ár: ar };
+
+      const div = document.createElement("div");
+      div.className = "product-item";
+      div.innerHTML = `
+        <div class="product-info">
+          <span class="name">${termekNev}</span>
+          <span class="price">${ar.toLocaleString()} Ft</span>
+        </div>
+        <button class="add-btn" onclick='addToCart(${JSON.stringify(item)})'>Kosárba</button>
       `;
-      tbody.appendChild(tr);
+      productContainer.appendChild(div);
     });
   });
 </script>
