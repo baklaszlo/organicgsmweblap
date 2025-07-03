@@ -38,7 +38,7 @@
             display: flex;
             padding: 20px;
         }
-        #product-list, #cart { width: 48%;
+        #product-list, #cart {
             width: 50%;
             padding: 10px;
         }
@@ -71,46 +71,6 @@
             border-radius: 5px;
             font-size: 16px;
         }
-    
-    #product-list {
-        height: 600px;
-        overflow-y: auto;
-        border: 1px solid #ccc;
-        padding: 10px;
-        background-color: #fdfdfd;
-    }
-    .product {
-        padding: 8px;
-        border-bottom: 1px solid #ddd;
-        margin-bottom: 5px;
-        font-family: Arial, sans-serif;
-        font-size: 16px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .product:last-child {
-        border-bottom: none;
-    }
-    .product button {
-        margin-left: 10px;
-        padding: 5px 10px;
-        border: none;
-        background-color: #007bff;
-        color: white;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-    .product button:hover {
-        background-color: #0056b3;
-    }
-    
-    .product input.quantity {
-        width: 50px;
-        margin-left: 10px;
-        padding: 4px;
-        font-size: 14px;
-    }
     </style>
 </head>
 <body>
@@ -120,7 +80,7 @@
 <div id="email-display"></div>
 </header>
 <main>
-<div id="product-list"></div><div class="vertical-divider" style="width: 4px; background-color: #ccc; margin: 0 10px;"></div>
+<div id="product-list"></div>
 <div>
 <h3>Kosár</h3>
 <div id="cart"></div>
@@ -132,99 +92,24 @@
 <script>
         emailjs.init("ll-ox5ToRtPOnL23O");
     </script>
+
 <script>
-        const cart = [];
-        const email = localStorage.getItem('loggedInEmail');
-        const displayNameMap = {
-            "yukonscoutdoo@gmail.com": "Yukon Scout doo",
-            "teszt@teszt.hu": "Teszt Felhasználó"
-        };
-        document.getElementById('email-display').innerText = `Üdvözlünk, ${displayNameMap[email] || email || 'Vendég'}!`;
+async function loadCSV() {
+    const response = await fetch("TPlista0702.csv");
+    const text = await response.text();
+    const lines = text.trim().split("\n");
+    const products = [];
 
-        function logout() {
-            localStorage.removeItem('loggedInEmail');
-            window.location.href = 'login.html';
+    for (let i = 1; i < lines.length; i++) {
+        const [item, price] = lines[i].split(",");
+        if (item && price) {
+            products.push({ item: item.trim(), price: parseFloat(price.trim()) });
         }
-
-        function renderProducts(products) {
-            const container = document.getElementById('product-list');
-            container.innerHTML = "<h3>Terméklista</h3>";
-            products.forEach(p => {
-                const div = document.createElement("div");
-                div.className = "product";
-                div.innerHTML = `
-                    ${p.item} – ${p.price} EUR
-                    
-            <input type="number" class="quantity" value="1" min="1" id="qty-${p.item.replace(/\s+/g, '_')}"/>
-            <button class="add-to-cart" onclick="addToCart('${p.item}', ${p.price}, 'qty-${p.item.replace(/\s+/g, '_')}')">Kosárba</button>
-            
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function addToCart(item, price, inputId) {
-            
-            const qty = parseInt(document.getElementById(inputId).value);
-            if (!isNaN(qty) && qty > 0) {
-                for (let i = 0; i < qty; i++) {
-                    cart.push({ item, price });
-                }
-            }
-            
-            renderCart();
-        }
-
-        function renderCart() {
-            const container = document.getElementById('cart');
-            container.innerHTML = "";
-            cart.forEach(c => {
-                const div = document.createElement("div");
-                div.className = "cart-item";
-                div.innerText = `${c.item} – ${c.price} EUR`;
-                container.appendChild(div);
-            });
-        }
-
-        function finalizeOrder() {
-            if (cart.length === 0) {
-                alert("A kosár üres.");
-                return;
-            }
-
-            const message = cart.map(c => `${c.item} – ${c.price} EUR`).join("\n");
-
-            emailjs.send("service_mq7100r", "template_dkx9ahj", {
-                items: message,
-                user_email: email
-            })
-            .then(() => {
-                alert("Köszönjük a rendelést!");
-            })
-            .catch((err) => {
-                console.error(err);
-                alert("Hiba történt a rendelés küldésekor.");
-            });
-        }
-
-        async function loadCSV() {
-            const response = await fetch("TPlista0702.csv");
-            const text = await response.text();
-            const lines = text.trim().split("\n");
-            const products = [];
-
-            for (let i = 1; i < lines.length; i++) {
-                const [item, price] = lines[i].split(",");
-                if (item && price) {
-                    products.push({ item: item.trim(), price: parseFloat(price.trim()) });
-                }
-            }
-            renderProducts(products);
-        }
-
-        window.onload = () => {
-            loadCSV();
-        };
-    </script>
-</body>
+    }
+    renderProducts(products);
+}
+window.onload = () => {
+    loadCSV();
+};
+</script></body>
 </html>
