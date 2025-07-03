@@ -1,231 +1,171 @@
 
 <!DOCTYPE html>
-
 <html lang="hu">
 <head>
-<meta charset="utf-8"/>
-<title>Termékek – Organic GSM</title>
-<meta content="width=device-width, initial-scale=1" name="viewport"/>
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js">
-function filterProducts() {
-  const input = document.getElementById("search").value.toLowerCase();
-  const items = document.querySelectorAll(".product-item");
-  items.forEach(item => {
-    const name = item.querySelector(".name").textContent.toLowerCase();
-    item.style.display = name.includes(input) ? "flex" : "none";
-  });
-}
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js">
-function filterProducts() {
-  const input = document.getElementById("search").value.toLowerCase();
-  const items = document.querySelectorAll(".product-item");
-  items.forEach(item => {
-    const name = item.querySelector(".name").textContent.toLowerCase();
-    item.style.display = name.includes(input) ? "flex" : "none";
-  });
-}
-</script>
-<style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      background: #f8f9fa;
-      color: #333;
-    }
-    header {
-      background: #0a3d62;
-      color: white;
-      padding: 10px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    header h1 {
-      margin: 0;
-    }
-    header button {
-      background: white;
-      color: #0a3d62;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    header button:hover {
-      background: #dcdde1;
-    }
-    main {
-      display: flex;
-      padding: 20px;
-      gap: 40px;
-    }
-    .product-list, .cart {
-      flex: 1;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
-    }
-    .product-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid #eee;
-    }
-    .product-item:last-child {
-      border-bottom: none;
-    }
-    .product-info {
-      flex-grow: 1;
-    }
-    .product-info span {
-      display: block;
-    }
-    .product-info .name {
-      font-weight: bold;
-      color: #0a3d62;
-    }
-    .product-info .price {
-      color: #27ae60;
-    }
-    button.add-btn {
-      background: #2980b9;
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button.add-btn:hover {
-      background: #1e5f8a;
-    }
-    ul#cartList {
-      list-style: none;
-      padding: 0;
-    }
-    ul#cartList li {
-      padding: 6px 0;
-    }
-    #total {
-      margin-top: 10px;
-      font-weight: bold;
-    }
-    #confirmation {
-      color: green;
-      margin-top: 10px;
-    }
-  </style>
-</head>
-<body><script src="https://cdn.emailjs.com/dist/email.min.js"></script><script>emailjs.init("ll-ox5ToRtPOnL23O");</script>
-<header>
-<div id="welcome-message" style="position: absolute; left: 50%; transform: translateX(-50%); color: white; font-size: 18px; font-weight: bold;">Üdvözlünk!</div><h1>Organic GSM – Termékek</h1>
-<button onclick="window.location.href='index.html'" style="position: absolute; right: 20px; top: 20px; background: white; color: #0a3d62; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">Kijelentkezés</button>
-</header>
-<main style="align-items: flex-start;">
-<div class="product-list">
-<h2>Terméklista</h2>
-<input id="search" onkeyup="filterProducts()" placeholder="Keresés..." style="width:100%;padding:8px;margin-bottom:12px;border:1px solid #ccc;border-radius:6px;" type="text"/>
-<div id="productContainer" style="max-height:80vh;overflow-y:auto;"></div>
-</div>
-<div class="cart" style="position:sticky;top:20px;height:fit-content;">
-<h2>Kosár</h2>
-<ul id="cartList"></ul>
-<p id="total">Végösszeg: 0 Ft</p>
-<button onclick="finalizeOrder()">Rendelés lezárása</button>
-<div id="confirmation"></div>
-</div>
-</main>
-<script>
-function finalizeOrder() {
-  if (cart.length === 0) {
-    alert("A kosár üres!");
-    return;
-  }
-
-  const orderDetails = cart.map(item =>
-    `${item.Termék} – ${item.qty} db – ${item.Ár.toLocaleString()} Ft/db`
-  ).join("\n");
-  const total = cart.reduce((sum, item) => sum + item.qty * item.Ár, 0);
-  const message = `Köszönjük rendelését!\n\nMegrendelt tételek:\n${orderDetails}\n\nVégösszeg: ${total.toLocaleString()} Ft`;
-  const email = localStorage.getItem("loggedInEmail") || "ismeretlen@domain.hu";
-
-  emailjs.send("service_mq7100r", "template_dkx9ahj", {
-    items: message,
-    user_email: email
-  }, "ll-ox5ToRtPOnL23O")
-  .then(() => {
-    document.getElementById("confirmation").textContent = "Rendelését megkaptuk, köszönjük!";
-  }, (err) => {
-    document.getElementById("confirmation").textContent = "Hiba történt a rendelés küldésekor.";
-    console.error(err);
-  });
-}
-</script>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const email = localStorage.getItem("loggedInEmail");
-    const nameMap = {
-        "yukonscoutdoo@gmail.com": "Yukon Scout doo",
-        "teszt@teszt.hu": "Teszt Felhasználó"
-    };
-    const welcome = document.getElementById("welcome-message");
-    if (email && welcome) {
-        const name = nameMap[email] || email;
-        welcome.textContent = `Üdvözlünk, ${name}!`;
-    }
-});
-</script><script>
-let cart = [];
-
-function addToCart(name, price) {
-  const existing = cart.find(item => item.Termék === name);
-  if (existing) {
-    existing.qty += 1;
-  } else {
-    cart.push({ Termék: name, Ár: price, qty: 1 });
-  }
-  renderCart();
-}
-
-function renderCart() {
-  const list = document.getElementById("cartList");
-  list.innerHTML = "";
-  let total = 0;
-  cart.forEach(item => {
-    const li = document.createElement("li");
-    li.textContent = `${item.Termék} – ${item.qty} db – ${item.Ár.toLocaleString()} Ft`;
-    list.appendChild(li);
-    total += item.Ár * item.qty;
-  });
-  document.getElementById("total").textContent = `Végösszeg: ${total.toLocaleString()} Ft`;
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-  fetch("TPlista0702.csv")
-    .then(res => res.text())
-    .then(text => {
-      const data = Papa.parse(text, { header: true }).data;
-      const container = document.getElementById("productContainer");
-      data.forEach(row => {
-        const name = row["item"];
-        const price = parseFloat(row["unit price"]);
-        if (name && !isNaN(price)) {
-          const div = document.createElement("div");
-          div.className = "product-item";
-          div.innerHTML = `
-            <div class="product-info">
-              <span class="name">${name}</span>
-              <span class="price">${price.toLocaleString()} Ft</span>
-            </div>
-            <button class="add-btn" onclick="addToCart('${name}', ${price})">Kosárba</button>
-          `;
-          container.appendChild(div);
+    <meta charset="UTF-8">
+    <title>Organic GSM – Termékek</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0; padding: 0;
         }
-      });
-    });
-});
-</script></body>
+        header {
+            background-color: #0f3c73;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            position: relative;
+        }
+        #logout-button {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            padding: 10px 15px;
+            background-color: white;
+            color: #0f3c73;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #email-display {
+            margin-top: 10px;
+            font-size: 16px;
+            font-style: italic;
+        }
+        main {
+            display: flex;
+            padding: 20px;
+        }
+        #product-list, #cart {
+            width: 50%;
+            padding: 10px;
+        }
+        .product {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #eef;
+            border-radius: 5px;
+        }
+        .cart-item {
+            background-color: #ffe;
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 5px;
+        }
+        button.add-to-cart {
+            float: right;
+            background-color: #0f3c73;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        #finalize-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: green;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        Organic GSM – Termékek
+        <button id="logout-button" onclick="logout()">Kijelentkezés</button>
+        <div id="email-display"></div>
+    </header>
+    <main>
+        <div id="product-list"></div>
+        <div>
+            <h3>Kosár</h3>
+            <div id="cart"></div>
+            <button id="finalize-btn" onclick="finalizeOrder()">Rendelés lezárása</button>
+        </div>
+    </main>
+
+    <script type="module">
+        import emailjs from 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+        window.emailjs = emailjs;
+        emailjs.init("ll-ox5ToRtPOnL23O");
+    </script>
+
+    <script>
+        const cart = [];
+        const email = localStorage.getItem('loggedInEmail');
+        const displayNameMap = {
+            "yukonscoutdoo@gmail.com": "Yukon Scout doo",
+            "teszt@teszt.hu": "Teszt Felhasználó"
+        };
+        document.getElementById('email-display').innerText = `Üdvözlünk, ${displayNameMap[email] || email || 'Vendég'}!`;
+
+        function logout() {
+            localStorage.removeItem('loggedInEmail');
+            window.location.href = 'login.html';
+        }
+
+        function renderProducts() {
+            const products = [
+                { item: "Apple iPhone 14", price: 300 },
+                { item: "Samsung Galaxy S23", price: 250 },
+                { item: "Xiaomi Redmi Note 12", price: 180 }
+            ];
+            const container = document.getElementById('product-list');
+            container.innerHTML = "<h3>Terméklista</h3>";
+            products.forEach((p, idx) => {
+                const div = document.createElement("div");
+                div.className = "product";
+                div.innerHTML = `
+                    ${p.item} – ${p.price} EUR
+                    <button class="add-to-cart" onclick="addToCart('${p.item}', ${p.price})">Kosárba</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function addToCart(item, price) {
+            cart.push({ item, price });
+            renderCart();
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cart');
+            container.innerHTML = "";
+            cart.forEach(c => {
+                const div = document.createElement("div");
+                div.className = "cart-item";
+                div.innerText = `${c.item} – ${c.price} EUR`;
+                container.appendChild(div);
+            });
+        }
+
+        function finalizeOrder() {
+            if (cart.length === 0) {
+                alert("A kosár üres.");
+                return;
+            }
+
+            const message = cart.map(c => `${c.item} – ${c.price} EUR`).join("\n");
+
+            emailjs.send("service_mq7100r", "template_dkx9ahj", {
+                items: message,
+                user_email: email
+            })
+            .then(() => {
+                alert("Köszönjük a rendelést!");
+            })
+            .catch((err) => {
+                console.error(err);
+                alert("Hiba történt a rendelés küldésekor.");
+            });
+        }
+
+        window.onload = () => {
+            renderProducts();
+        };
+    </script>
+</body>
 </html>
