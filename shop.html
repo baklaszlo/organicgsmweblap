@@ -6,100 +6,69 @@
     <title>Organic GSM – Termékek</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
             margin: 0; padding: 0;
-            background-color: #f8f9fa;
         }
         header {
             background-color: #0f3c73;
             color: white;
-            padding: 30px;
+            padding: 20px;
             text-align: center;
-            font-size: 28px;
-            font-weight: bold;
+            font-size: 24px;
             position: relative;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
         #logout-button {
             position: absolute;
             right: 20px;
-            top: 30px;
-            padding: 10px 18px;
+            top: 20px;
+            padding: 10px 15px;
             background-color: white;
             color: #0f3c73;
             border: none;
-            border-radius: 8px;
+            border-radius: 5px;
             cursor: pointer;
-            font-weight: bold;
-        }
-        #logout-button:hover {
-            background-color: #e4e4e4;
         }
         #email-display {
             margin-top: 10px;
-            font-size: 18px;
+            font-size: 16px;
             font-style: italic;
         }
         main {
             display: flex;
-            padding: 30px;
-            gap: 30px;
+            padding: 20px;
         }
         #product-list, #cart {
             width: 50%;
-            padding: 20px;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 10px;
         }
         .product {
-            margin: 15px 0;
-            padding: 15px;
-            background-color: #f1f5ff;
-            border-left: 5px solid #0f3c73;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-        .cart-item {
-            background-color: #fff3cd;
             margin: 10px 0;
             padding: 10px;
-            border-left: 5px solid #ffc107;
-            border-radius: 8px;
-            font-size: 16px;
+            background-color: #eef;
+            border-radius: 5px;
+        }
+        .cart-item {
+            background-color: #ffe;
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 5px;
         }
         button.add-to-cart {
             float: right;
             background-color: #0f3c73;
             color: white;
             border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        button.add-to-cart:hover {
-            background-color: #0a2d56;
+            padding: 5px 10px;
+            border-radius: 5px;
         }
         #finalize-btn {
             margin-top: 20px;
-            padding: 12px 24px;
-            background-color: #28a745;
+            padding: 10px 20px;
+            background-color: green;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 5px;
             font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        #finalize-btn.loading {
-            background-color: #218838;
-            opacity: 0.7;
-            cursor: wait;
-        }
-        #status-message {
-            margin-top: 15px;
-            font-size: 14px;
-            color: #333;
         }
     </style>
 </head>
@@ -109,28 +78,16 @@
         <button id="logout-button" onclick="logout()">Kijelentkezés</button>
         <div id="email-display"></div>
     </header>
-    
-    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 30px; background-color: #e9ecef;">
-        <input type="text" id="search-bar" placeholder="Keresés a termékek között..." style="padding: 8px; width: 300px; border-radius: 6px; border: 1px solid #ccc; font-size: 16px;">
-        <div style="font-size: 16px; font-family: Georgia, serif; font-weight: bold;">
-            📧 <a href="mailto:info@organicgsm.hu">info@organicgsm.hu</a> |
-            💬 <a href="https://teams.microsoft.com" target="_blank">Microsoft Teams</a>
-        </div>
-    </div>
     <main>
-    
         <div id="product-list"></div>
         <div>
             <h3>Kosár</h3>
-            
-    <div id="cart"></div>
-    <div id="order-summary" style="margin-top: 15px; font-size: 16px; font-weight: bold;">Összesen: 0 EUR</div>
-    
+            <div id="cart"></div>
             <button id="finalize-btn" onclick="finalizeOrder()">Rendelés lezárása</button>
-            <div id="status-message"></div>
         </div>
     </main>
 
+    <!-- EmailJS v3 SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
         emailjs.init("ll-ox5ToRtPOnL23O");
@@ -150,10 +107,7 @@
             window.location.href = 'login.html';
         }
 
-        
-        let allProducts = [];
         function renderProducts(products) {
-            allProducts = products;
             const container = document.getElementById('product-list');
             container.innerHTML = "<h3>Terméklista</h3>";
             products.forEach(p => {
@@ -163,75 +117,31 @@
                     ${p.item} – ${p.price} EUR
                     <button class="add-to-cart" onclick="addToCart('${p.item}', ${p.price})">Kosárba</button>
                 `;
-                
-        container.appendChild(div);
-        total += c.price;
-    
-            });
-        }
-
-        document.getElementById('search-bar').addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const filtered = allProducts.filter(p => p.item.toLowerCase().includes(searchTerm));
-            renderProducts(filtered);
-        });
-    
-            const container = document.getElementById('product-list');
-            container.innerHTML = "<h3>Terméklista</h3>";
-            products.forEach(p => {
-                const div = document.createElement("div");
-                div.className = "product";
-                div.innerHTML = `
-                    ${p.item} – ${p.price} EUR
-                    <button class="add-to-cart" onclick="addToCart('${p.item}', ${p.price})">Kosárba</button>
-                `;
-                
-        container.appendChild(div);
-        total += c.price;
-    
+                container.appendChild(div);
             });
         }
 
         function addToCart(item, price) {
             cart.push({ item, price });
-            
-    renderCart();
-    document.getElementById('order-summary').innerText = "Összesen: " + cart.reduce((sum, c) => sum + c.price, 0) + " EUR";
-    
+            renderCart();
         }
 
-        
-    function renderCart() {
-        const orderSummary = document.getElementById('order-summary');
-    
+        function renderCart() {
             const container = document.getElementById('cart');
-            
-        container.innerHTML = "";
-        let total = 0;
-    
+            container.innerHTML = "";
             cart.forEach(c => {
                 const div = document.createElement("div");
                 div.className = "cart-item";
                 div.innerText = `${c.item} – ${c.price} EUR`;
-                
-        container.appendChild(div);
-        total += c.price;
-    
+                container.appendChild(div);
             });
         }
 
         function finalizeOrder() {
-            const finalizeBtn = document.getElementById('finalize-btn');
-            const statusMessage = document.getElementById('status-message');
-
             if (cart.length === 0) {
-                statusMessage.textContent = "⚠️ A kosár üres.";
+                alert("A kosár üres.");
                 return;
             }
-
-            finalizeBtn.classList.add("loading");
-            finalizeBtn.disabled = true;
-            statusMessage.textContent = "📨 Rendelés küldése folyamatban...";
 
             const message = cart.map(c => `${c.item} – ${c.price} EUR`).join("\n");
 
@@ -240,15 +150,11 @@
                 user_email: email
             })
             .then(() => {
-                statusMessage.textContent = "✅ Köszönjük a rendelést! Email elküldve.";
-                finalizeBtn.classList.remove("loading");
-                finalizeBtn.disabled = false;
+                alert("Köszönjük a rendelést!");
             })
             .catch((err) => {
                 console.error(err);
-                statusMessage.textContent = "❌ Hiba történt a rendelés küldésekor.";
-                finalizeBtn.classList.remove("loading");
-                finalizeBtn.disabled = false;
+                alert("Hiba történt a rendelés küldésekor.");
             });
         }
 
