@@ -248,7 +248,7 @@ document.addEventListener("DOMContentLoaded", function() {
 </script><script>
 function sendOrderEmail() {
     const email = localStorage.getItem("loggedInEmail") || "ismeretlen@domain.hu";
-    const orderItems = document.querySelectorAll("#cart li");
+    const orderItems = document.querySelectorAll("#cartList li");
     if (orderItems.length === 0) {
         alert("A kosár üres.");
         return;
