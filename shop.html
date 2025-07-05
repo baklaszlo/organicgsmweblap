@@ -193,6 +193,7 @@ function renderCart() {
 }
 
 
+
 function finalizeOrder() {
     if (cart.length === 0) {
         alert("A kosár üres.");
@@ -218,8 +219,7 @@ function finalizeOrder() {
         alert("Hiba történt az email küldésekor: " + error.text);
     });
 }
-
-    const items = cart.map(i => `${i.item} – ${i.quantity} db`).join("\n");
+– ${i.quantity} db`).join("\n");
     alert("Köszönjük rendelését!\n\nTételek:\n" + items);
 }
 </script>
