@@ -199,6 +199,26 @@ function finalizeOrder() {
         return;
     }
 
+    const items = cart.map(i => `${i.item} – ${i.quantity} db`).join("
+");
+    const userEmail = localStorage.getItem("loggedInEmail");
+
+    if (!userEmail) {
+        alert("Nem található a bejelentkezett email cím.");
+        return;
+    }
+
+    emailjs.send("service_mq7100r", "template_dkx9ahj", {
+        items: items,
+        user_email: userEmail
+    }, "ll-ox5ToRtPOnL23O")
+    .then(function(response) {
+        alert("Köszönjük rendelését! Email elküldve.");
+    }, function(error) {
+        alert("Hiba történt az email küldésekor: " + error.text);
+    });
+}
+
     const items = cart.map(i => `${i.item} – ${i.quantity} db`).join("\n");
     alert("Köszönjük rendelését!\n\nTételek:\n" + items);
 }
