@@ -2,120 +2,196 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-    <meta charset="UTF-8">
-    <title>Organic GSM – Webshop</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        header { background-color: #0f3c73; color: white; padding: 20px; text-align: center; font-size: 24px; }
-        main { display: flex; height: calc(100vh - 100px); }
-        #product-list, #cart-container {
-            width: 50%; padding: 20px; overflow-y: auto;
-        }
-        .product, .cart-item {
-            background: #eef; margin: 10px 0; padding: 10px;
-            border-radius: 8px;
-        }
-        .cart-item { background: #ffe; }
-        button {
-            background-color: #0f3c73;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            margin-left: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        #finalize-btn {
-            margin-top: 20px;
-            background-color: green;
-            font-size: 16px;
-        }
-    </style>
+<meta charset="utf-8"/>
+<title>Organic GSM – Webshop</title>
+<style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    header { background-color: #0f3c73; color: white; padding: 20px; text-align: center; font-size: 24px; position: relative; }
+    #search-container {
+        position: absolute; left: 20px; top: 20px;
+    }
+    #search-input {
+        padding: 6px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc;
+    }
+    main { display: flex; height: calc(100vh - 100px); }
+    #product-list, #cart-container {
+        width: 50%; padding: 20px; overflow-y: auto;
+    }
+    .product, .cart-item {
+        background: #eef; margin: 10px 0; padding: 10px;
+        border-radius: 8px;
+    }
+    .cart-item { background: #ffe; }
+    button {
+        background-color: #0f3c73;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        margin-left: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    #finalize-btn {
+        position: fixed;
+        bottom: 10px;
+        right: 20px;
+        background-color: green;
+        font-size: 16px;
+        z-index: 999;
+    }
+
+#cart-footer {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    background: white;
+    padding: 10px 20px;
+    border-top: 1px solid #ccc;
+    box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 50%;
+    z-index: 1000;
+}
+#cart-summary {
+    font-size: 16px;
+    font-weight: bold;
+}
+#finalize-btn {
+    position: static;
+    margin-left: auto;
+    background-color: green;
+    font-size: 16px;
+}
+
+</style>
 </head>
 <body>
-    <header>Organic GSM – Termékek</header>
-    <main>
-        <div id="product-list">Betöltés...</div>
-        <div id="cart-container">
-            <h3>Kosár</h3>
-            <div id="cart"></div>
-            <button id="finalize-btn" onclick="finalizeOrder()">Rendelés lezárása</button>
-        </div>
-    </main>
+<header>
+    <div id="search-container">
+        <input type="text" id="search-input" placeholder="Keresés..." oninput="filterProducts()">
+    </div>
+    Organic GSM – Termékek
+</header>
+<main>
+    <div id="product-list">Betöltés...</div>
+    <div id="cart-container">
+        <h3>Kosár</h3>
+        <div id="cart"></div>
+    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script>
-        emailjs.init("ll-ox5ToRtPOnL23O");
+</main>
+<div id="cart-footer">
+    <div id="cart-summary">Összesen: 0 Ft</div>
+    <button id="finalize-btn" onclick="finalizeOrder()">Rendelés lezárása</button>
+</div>
 
-        let cart = [];
-        let currentUserEmail = "info@organicgsm.hu";  // statikus vagy dinamikus email itt beállítható
+<button id="finalize-btn" onclick="finalizeOrder()">Rendelés lezárása</button>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script>
+let allProducts = [];
 
-        async function loadCSV() {
-            try {
-                const response = await fetch("TPlista0702.csv");
-                const text = await response.text();
-                const lines = text.trim().split("\n");
-                const products = [];
+function parseCSV(text) {
+    const lines = text.trim().split('\n');
+    const headers = lines[0].split(';');
+    const products = [];
 
-                for (let i = 1; i < lines.length; i++) {
-                    const [item, price] = lines[i].split(",");
-                    if (item && price) {
-                        products.push({ item: item.trim(), price: parseFloat(price.trim()) });
-                    }
-                }
-                renderProducts(products);
-            } catch (error) {
-                document.getElementById("product-list").innerText = "Hiba a CSV beolvasásakor.";
-                console.error("CSV betöltési hiba:", error);
-            }
-        }
-
-        function renderProducts(products) {
-            const list = document.getElementById("product-list");
-            list.innerHTML = "";
-            products.forEach((p, index) => {
-                const div = document.createElement("div");
-                div.className = "product";
-                div.innerHTML = `
-                    <strong>${p.item}</strong> – ${p.price.toFixed(2)} Ft
-                    <button onclick="addToCart('${p.item}', ${p.price})">Kosárba</button>
-                `;
-                list.appendChild(div);
-            });
-        }
-
-        function addToCart(item, price) {
-            cart.push({ item, price });
-            renderCart();
-        }
-
-        function renderCart() {
-            const container = document.getElementById("cart");
-            container.innerHTML = "";
-            cart.forEach((entry, index) => {
-                const div = document.createElement("div");
-                div.className = "cart-item";
-                div.innerText = `${entry.item} – ${entry.price.toFixed(2)} Ft`;
-                container.appendChild(div);
-            });
-        }
-
-        function finalizeOrder() {
-            if (cart.length === 0) {
-                alert("A kosár üres.");
-                return;
-            }
-            const items = cart.map(p => `${p.item} – ${p.price.toFixed(2)} Ft`).join("\n");
-            const params = {
-                items,
-                user_email: currentUserEmail
+    for (let i = 1; i < lines.length; i++) {
+        const data = lines[i].split(';');
+        if (data.length >= 2) {
+            const product = {
+                item: data[0].trim(),
+                price: parseFloat(data[1].trim())
             };
-
-            emailjs.send("service_mq7100r", "template_dkx9ahj", params)
-                .then(() => alert("Rendelés elküldve!"), () => alert("Hiba történt a rendelés küldésekor."));
+            products.push(product);
         }
+    }
+    return products;
+}
 
-        window.onload = () => loadCSV();
-    </script>
+function renderProducts(products) {
+    const productList = document.getElementById("product-list");
+    productList.innerHTML = "";
+
+    products.forEach(product => {
+        const productDiv = document.createElement("div");
+        productDiv.classList.add("product");
+        productDiv.innerHTML = `
+            <strong>${product.item}</strong><br>
+            Ár: ${product.price.toLocaleString()} Ft<br>
+            <input type="number" min="1" value="1" class="quantity-input" style="width: 50px;">
+            <button class="add-to-cart">Kosárba</button>
+        `;
+        productList.appendChild(productDiv);
+
+        productDiv.querySelector(".add-to-cart").addEventListener("click", () => {
+            const quantity = parseInt(productDiv.querySelector(".quantity-input").value);
+            addToCart(product.item, product.price, quantity);
+        });
+    });
+}
+
+function filterProducts() {
+    const searchText = document.getElementById("search-input").value.toLowerCase();
+    const filtered = allProducts.filter(p => p.item.toLowerCase().includes(searchText));
+    renderProducts(filtered);
+}
+
+function loadCSV() {
+    fetch("TPlista0702.csv")
+        .then(response => response.text())
+        .then(text => {
+            allProducts = parseCSV(text);
+            renderProducts(allProducts);
+        })
+        .catch(error => {
+            console.error("Hiba a CSV betöltésekor:", error);
+        });
+}
+
+window.addEventListener("load", loadCSV);
+</script>
+<script>
+const cart = [];
+
+function addToCart(item, price, quantity) {
+    const existingItem = cart.find(i => i.item === item);
+    if (existingItem) {
+        existingItem.quantity += quantity;
+    } else {
+        cart.push({ item, price, quantity });
+    }
+    renderCart();
+}
+
+
+function renderCart() {
+    const cartDiv = document.getElementById("cart");
+    cartDiv.innerHTML = "";
+    let total = 0;
+
+    cart.forEach(entry => {
+        const div = document.createElement("div");
+        div.classList.add("cart-item");
+        div.innerHTML = `<strong>${entry.item}</strong> – ${entry.quantity} db – ${(entry.price * entry.quantity).toLocaleString()} Ft`;
+        cartDiv.appendChild(div);
+        total += entry.price * entry.quantity;
+    });
+
+    document.getElementById("cart-summary").innerHTML = `<strong>Összesen:</strong> ${total.toLocaleString()} Ft`;
+}
+
+
+function finalizeOrder() {
+    if (cart.length === 0) {
+        alert("A kosár üres.");
+        return;
+    }
+
+    const items = cart.map(i => `${i.item} – ${i.quantity} db`).join("\n");
+    alert("Köszönjük rendelését!\n\nTételek:\n" + items);
+}
+</script>
 </body>
 </html>
