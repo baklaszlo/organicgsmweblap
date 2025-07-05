@@ -183,44 +183,15 @@ function renderCart() {
 }
 
 
-
 function finalizeOrder() {
     if (cart.length === 0) {
         alert("A kosár üres.");
         return;
     }
 
-    const items = cart.map(i => `${i.item} – ${i.quantity} db`).join("
-");
-    const total = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
-
-    const params = {
-        message: "Tételek:
-" + items + "
-
-Összesen: " + total.toLocaleString() + " Ft"
-    };
-
-    emailjs.send("service_mq7100r", "template_dkx9ahj", params)
-        .then(function(response) {
-            alert("Köszönjük rendelését! A visszaigazolás elküldve.");
-        }, function(error) {
-            alert("Hiba történt az email küldésekor.");
-            console.error("EmailJS hiba:", error);
-        });
-}
-
-
     const items = cart.map(i => `${i.item} – ${i.quantity} db`).join("\n");
     alert("Köszönjük rendelését!\n\nTételek:\n" + items);
 }
 </script>
-
-<script>
-(function(){
-    emailjs.init("ll-ox5ToRtPOnL23O");
-})();
-</script>
-
 </body>
 </html>
