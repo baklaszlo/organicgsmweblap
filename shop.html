@@ -1,225 +1,202 @@
-
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-<meta charset="utf-8"/>
-<title>Organic GSM – Webshop</title>
-<style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-    header { background-color: #0f3c73; color: white; padding: 20px; text-align: center; font-size: 24px; position: relative; }
-    #search-container {
-        position: absolute; left: 20px; top: 20px;
+  <meta charset="UTF-8">
+  <title>Terméklista – Organic GSM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      margin: 0;
+      background: #f9f9f9;
     }
-    #search-input {
-        padding: 6px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc;
+    h1 {
+      color: #0a3d62;
     }
-    main { display: flex; height: calc(100vh - 100px); }
-    #product-list, #cart-container {
-        width: 50%; padding: 20px; overflow-y: auto;
+    #logout {
+      float: right;
+      background: #ddd;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
     }
     .product, .cart-item {
-        background: #eef; margin: 10px 0; padding: 10px;
-        border-radius: 8px;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 1px 1px 5px rgba(0,0,0,0.1);
     }
-    .cart-item { background: #ffe; }
-    button {
-        background-color: #0f3c73;
-        color: white;
-        border: none;
-        padding: 6px 12px;
-        margin-left: 10px;
-        border-radius: 5px;
-        cursor: pointer;
+    .product h3 {
+      margin-top: 0;
     }
-    #finalize-btn {
-        position: fixed;
-        bottom: 10px;
-        right: 20px;
-        background-color: green;
-        font-size: 16px;
-        z-index: 999;
+    .product button, .cart-item button, #orderBtn {
+      margin-top: 10px;
+      background: #2980b9;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
     }
-
-#cart-footer {
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    background: white;
-    padding: 10px 20px;
-    border-top: 1px solid #ccc;
-    box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 50%;
-    z-index: 1000;
-}
-#cart-summary {
-    font-size: 16px;
-    font-weight: bold;
-}
-#finalize-btn {
-    position: static;
-    margin-left: auto;
-    background-color: green;
-    font-size: 16px;
-}
-
-</style>
+    .product button:hover, .cart-item button:hover, #orderBtn:hover {
+      background: #1e5f8a;
+    }
+    #cart {
+      margin-top: 40px;
+    }
+    #total {
+      font-weight: bold;
+      font-size: 1.2em;
+      margin-top: 10px;
+    }
+    #confirmation {
+      margin-top: 15px;
+      font-weight: bold;
+      color: green;
+    }
+  </style>
 </head>
 <body>
-<header>
-    <div id="search-container">
-        <input type="text" id="search-input" placeholder="Keresés..." oninput="filterProducts()">
-    </div>
-    <div style="display: flex; justify-content: center; align-items: center; gap: 20px; flex-wrap: wrap;">
-        <div>Organic GSM – Termékek</div>
-        <div id="welcome-message" style="font-size: 16px; background-color: #fff; color: #0f3c73; padding: 6px 12px; border-radius: 6px;"></div>
-    </div>
-</header>
-<main>
-    <div id="product-list">Betöltés...</div>
-    <div id="cart-container">
-        <h3>Kosár</h3>
-        <div id="cart"></div>
-    </div>
 
-</main>
-<div id="cart-footer">
-    <div id="cart-summary">Összesen: 0 Ft</div>
-    <button id="finalize-btn" onclick="finalizeOrder()">Rendelés lezárása</button>
-</div>
+  <h1>Termékek <button id="logout" onclick="logout()">Kilépés</button></h1>
 
-<button id="finalize-btn" onclick="finalizeOrder()">Rendelés lezárása</button>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-<script>
-let allProducts = [];
+  <div class="grid" id="productList"></div>
 
-function parseCSV(text) {
-    const lines = text.trim().split('\n');
-    const headers = lines[0].split(';');
-    const products = [];
+  <div id="cart">
+    <h2>Kosár</h2>
+    <div id="cartItems"></div>
+    <p id="total">Végösszeg: 0 Ft</p>
+    <button id="orderBtn" onclick="finalizeOrder()">Rendelés lezárása</button>
+    <div id="confirmation"></div>
+  </div>
 
-    for (let i = 1; i < lines.length; i++) {
-        const data = lines[i].split(';');
-        if (data.length >= 2) {
-            const product = {
-                item: data[0].trim(),
-                price: parseFloat(data[1].trim())
-            };
-            products.push(product);
-        }
-    }
-    return products;
-}
+  <script>
+    emailjs.init("ll-ox5ToRtPOnL23O");
 
-function renderProducts(products) {
-    const productList = document.getElementById("product-list");
-    productList.innerHTML = "";
+    const products = [
+      { id: 1000, name: "Apple Watch 10 42mm Aluminium Silver with Denim Sport Band M/L MWWC3", price: 168800 },
+      { id: 1001, name: "Apple Watch 10 42mm Aluminium Jet Black with Black Sport Band M/L MWWF3", price: 168800 },
+      { id: 1002, name: "Apple Watch 10 42mm Aluminium Silver with Denim Sport Band S/M MWWA3", price: 168800 },
+      { id: 1003, name: "Apple Watch 10 46mm Aluminium Silver with Blue Cloud Sport Loop MWWN3", price: 177900 },
+      { id: 1004, name: "Apple Watch 10 46mm Aluminium Jet Black with Ink Sport Loop S/M MWWR3", price: 184100 },
+      { id: 1005, name: "Apple Watch 10 46mm Aluminium Rose Gold with Light Blush Sport Band M/L MWWU3", price: 177900 },
+      { id: 1006, name: "Apple Watch 10 46mm Aluminium Jet Black with Black Sport Band S/M MWWP3", price: 179500 },
+      { id: 1007, name: "Apple Watch 10 46mm Aluminium Rose Gold with Light Blush Sport Band S/M MWWT3", price: 177900 },
+      { id: 1008, name: "Apple Watch SE 40mm 2024 Aluminium Midnight with Sport Strap Midnight S/M MXE73", price: 98500 },
+      { id: 1009, name: "Apple Watch SE 40mm 2024 Aluminium Silver with Sport Strap Denim S/M MXEC3", price: 98500 },
+      { id: 1010, name: "Apple Watch SE 44mm 2024 Aluminium Starlight with Sport Strap Starlight M/L MXEV3", price: 107000 },
+      { id: 1011, name: "Apple Watch SE 44mm 2024 Aluminium Midnight with Sport Strap Midnight M/L MXEK3", price: 107000 },
+      { id: 1012, name: "Apple Watch SE 44mm 2024 Aluminium Silver with Sport Strap Denim M/L MXER3", price: 107000 },
+      { id: 1013, name: "Apple  AirTag 4 Pack MX542ZM/A White Silver", price: 43000 },
+      { id: 1014, name: "Apple AirPods 4.Gen with ANC White MXP93 Blister", price: 78200 },
+      { id: 1015, name: "Apple AirPods 4.Gen White MXP63 Blister", price: 55800 },
+      { id: 1016, name: "Apple AirPods Pro (2. Gen.) with Magsafe Charging Case USB-C White MTJV3 Blister", price: 90800 },
+      { id: 1017, name: "Apple MX532ZM AirTag White Silver", price: 18000 },
+      { id: 1018, name: "Apple iPad 10,9 2022 64GB Blue MCM84 without Power Adapter", price: 123500 },
+      { id: 1019, name: "Apple iPad 10,9 2022 64GB Silver MCM74 without Power Adapter", price: 123500 }
+    ];
 
-    products.forEach(product => {
-        const productDiv = document.createElement("div");
-        productDiv.classList.add("product");
-        productDiv.innerHTML = `
-            <strong>${product.item}</strong><br>
-            Ár: ${product.price.toLocaleString()} Ft<br>
-            <input type="number" min="1" value="1" class="quantity-input" style="width: 50px;">
-            <button class="add-to-cart">Kosárba</button>
-        `;
-        productList.appendChild(productDiv);
+    const cart = [];
 
-        productDiv.querySelector(".add-to-cart").addEventListener("click", () => {
-            const quantity = parseInt(productDiv.querySelector(".quantity-input").value);
-            addToCart(product.item, product.price, quantity);
-        });
-    });
-}
-
-function filterProducts() {
-    const searchText = document.getElementById("search-input").value.toLowerCase();
-    const filtered = allProducts.filter(p => p.item.toLowerCase().includes(searchText));
-    renderProducts(filtered);
-}
-
-function loadCSV() {
-    fetch("TPlista0702.csv")
-        .then(response => response.text())
-        .then(text => {
-            allProducts = parseCSV(text);
-            renderProducts(allProducts);
-        })
-        .catch(error => {
-            console.error("Hiba a CSV betöltésekor:", error);
-        });
-}
-
-window.addEventListener("load", loadCSV);
-window.addEventListener("load", function() {
-    const email = localStorage.getItem("loggedInEmail");
-    if (email) {
-        const welcomeDiv = document.getElementById("welcome-message");
-        welcomeDiv.textContent = `Üdvözlünk, ${email}`;
-    }
-});
-</script>
-<script>
-const cart = [];
-
-function addToCart(item, price, quantity) {
-    const existingItem = cart.find(i => i.item === item);
-    if (existingItem) {
-        existingItem.quantity += quantity;
-    } else {
-        cart.push({ item, price, quantity });
-    }
-    renderCart();
-}
-
-
-function renderCart() {
-    const cartDiv = document.getElementById("cart");
-    cartDiv.innerHTML = "";
-    let total = 0;
-
-    cart.forEach(entry => {
+    function renderProducts() {
+      const productList = document.getElementById("productList");
+      productList.innerHTML = "";
+      products.forEach(p => {
         const div = document.createElement("div");
-        div.classList.add("cart-item");
-        div.innerHTML = `<strong>${entry.item}</strong> – ${entry.quantity} db – ${(entry.price * entry.quantity).toLocaleString()} Ft`;
+        div.className = "product";
+        div.innerHTML = `
+          <h3>${p.name}</h3>
+          <p><strong>${p.price.toLocaleString()} Ft</strong></p>
+          <button onclick="addToCart(${p.id})">Kosárba</button>
+        `;
+        productList.appendChild(div);
+      });
+    }
+
+    function addToCart(id) {
+      const product = products.find(p => p.id === id);
+      const existing = cart.find(item => item.id === id);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({ ...product, qty: 1 });
+      }
+      renderCart();
+    }
+
+    function removeFromCart(id) {
+      const index = cart.findIndex(item => item.id === id);
+      if (index > -1) {
+        cart.splice(index, 1);
+      }
+      renderCart();
+    }
+
+    function renderCart() {
+      const cartDiv = document.getElementById("cartItems");
+      cartDiv.innerHTML = "";
+      let total = 0;
+      cart.forEach(item => {
+        total += item.price * item.qty;
+        const div = document.createElement("div");
+        div.className = "cart-item";
+        div.innerHTML = `
+          ${item.name} – ${item.qty} db – ${item.price.toLocaleString()} Ft/db
+          <br><button onclick="removeFromCart(${item.id})">Törlés</button>
+        `;
         cartDiv.appendChild(div);
-        total += entry.price * entry.quantity;
-    });
-
-    document.getElementById("cart-summary").innerHTML = `<strong>Összesen:</strong> ${total.toLocaleString()} Ft`;
-}
-
-
-
-function finalizeOrder() {
-    if (cart.length === 0) {
-        alert("A kosár üres.");
-        return;
+      });
+      document.getElementById("total").textContent = "Végösszeg: " + total.toLocaleString() + " Ft";
     }
 
-    const items = cart.map(i => `${i.item} – ${i.quantity} db`).join("
-");
-    const userEmail = localStorage.getItem("loggedInEmail");
-
-    if (!userEmail) {
-        alert("Nem található a bejelentkezett email cím.");
-        return;
+    function logout() {
+      window.location.href = "index.html";
     }
 
-    emailjs.send("service_mq7100r", "template_dkx9ahj", {
-        items: items,
-        user_email: userEmail
-    }, "ll-ox5ToRtPOnL23O")
-    .then(function(response) {
-        alert("Köszönjük rendelését! Email elküldve.");
-    }, function(error) {
-        alert("Hiba történt az email küldésekor: " + error.text);
-    });
-}
-}
-</script>
+    function finalizeOrder() {
+      if (cart.length === 0) {
+        alert("A kosár üres!");
+        return;
+      }
+
+      const orderDetails = cart.map(item =>
+        `${item.name} – ${item.qty} db – ${item.price.toLocaleString()} Ft/db`
+      ).join("\n");
+
+      const total = cart.reduce((sum, item) => sum + item.qty * item.price, 0);
+      const fullMessage = `Köszönjük rendelését!\n\nMegrendelt tételek:\n${orderDetails}\n\nVégösszeg: ${total.toLocaleString()} Ft`;
+
+      const templateParams = { message: fullMessage };
+      const button = document.getElementById("orderBtn");
+      const confirmation = document.getElementById("confirmation");
+
+      button.disabled = true;
+      button.textContent = "Rendelés folyamatban...";
+
+      emailjs.send("service_mq7100r", "template_v1t2iq9", templateParams)
+        .then(() => {
+          button.textContent = "Sikeresen elküldve ✅";
+          confirmation.textContent = "Rendelését megkaptuk, köszönjük!";
+        }, (error) => {
+          console.error("Hiba az email küldés során:", error);
+          button.disabled = false;
+          button.textContent = "Rendelés lezárása";
+          confirmation.textContent = "Hiba történt a rendelés küldésekor.";
+        });
+    }
+
+    renderProducts();
+    renderCart();
+  </script>
+
 </body>
 </html>
